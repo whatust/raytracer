@@ -1,158 +1,198 @@
 #include "ray_tracer.h"
 
-	void RayTracer::addObject(Object *obj){
-		objects.push_back(obj);
-		return;
-	}
+    void RayTracer::addObject(Object *obj){
 
-	void RayTracer::addLight(Light *light){
-		lights.push_back(light);
-		return;
-	}
+        objects.push_back(obj);
+        return;
+    }
 
-	Color RayTracer::castRayOnScreenPixel(uint32_t x, uint32_t y);
+    void RayTracer::addLight(Light *light){
 
-	bool RayTracer::isShadow(
-							const Vector v_light
-							const double distance){
-		for(std::Vector<Object*>::iterator obj = objects.begin(); obj != objects.end(); ++obj){
+        lights.push_back(light);
+        return;
+    }
 
-		}
+    Vector RayTracer::calcCameraRay(const Camera &camera,
+                                    double width, double height, 
+                                    int i, int j){
 
-	}
+        Vector r;
 
-	Color RayTracer::castRay(
-							const Vector &ray,
-							const Point origin,
-							int level){
+        double x = −1.0 * camera.near * camera−>n.x +
+        width * (2.0 * i / camera.w.width − 1.0) * camera.u.x +
+        height * (2.0 * j / camera.w.height − 1.0) * camera.v.x;
 
-		int obj_idx=0;
-		Color pixel_color;
+        double y = −1.0 * camera.near * camera−>n.y +
+        width * (2.0 * i / camera.w.width − 1.0) * camera.u.y +
+        height * (2.0 * j / camera.w.height − 1.0) * camera.v.y;
 
-		intersection = findClosestIntersection(ray, &obj_idx);
+        double z = −1.0 * camera.near * camera−>n.z +
+        width * (2.0 * i / camera.w.width − 1.0) * camera.u.z +
+        height * (2.0 * j / camera.w.height − 1.0) * camera.v.z
 
-		if(obj_idx >= 0){
-			
-			Color specular_comp = Color();
-			Color diffuse_comp = Color();
+        double w = 0.0;
+        r = Vector(x, y, z, w);
 
-			Material material = objects[obj_idx].material;
-			Vector v_normal = calcNormalVector(intersection, objects[obj_idx]);
-			Vector v_camera = calcCenterVector(intersection, origin);
-			
-			for(std::Vector<Light*>::iterator light = lights.begin(); light != lights.end(); ++light){
-				
-				Vector v_light = calcLightVector(intersection, *light);
-				Vector v_specular = calcSpecVector(v_normal, v_light);
+        return r;
+    }
 
-				specular_comp += calc calcSpecularComp(v_specular, v_camera, *light, material)
-				diffuse_comp += calcDifusalComp(v_normal, v_light, *light, material);
-			}
+    bool RayTracer::isShadow(
+                            const Vector v_light
+                            const Point o_light){
 
-			Color ambient_comp = getAmbientComp(material.obj, ambient_light_intensity);
+        for(std::Vector<Object*>::iterator obj = objects.begin(); obj != objects.end(); ++obj){
+            if(obj->intersect(v_light, o_light))
+                return true;
+        }
+        return false;
+    }
 
-			if(level){
-				//Reflection
-				Vector v_reflection = calcReflectionVector(ray, normal);
-				Color reflection_comp = castRay(v_reflection, intersection, level-1);
+    Color RayTracer::castRay(
+                            const Vector &ray,
+                            const Point origin,
+                            int level){
 
-				//Refraction
-				Vector v_refraction = calcRefractionVector(ray, normal, material)
-				Color refraction_comp = castRay(v_refraction, intersection, level-1);
+        int obj_idx=0;
+        Color pixel_color;
 
-				pixel_color = ambient_comp + specular_comp + diffuse_comp + refraction_comp + reflection_comp;
-			}else{
-				pixel_color = ambient_comp + specular_comp + diffuse_comp;
-			}
+        intersection = findClosestIntersection(ray, &obj_idx);
 
-		}else{
-			pixel_color = Color();
-		}
+        if(obj_idx >= 0){
+            
+            Color specular_comp = Color();
+            Color diffuse_comp = Color();
 
-		return pixel_color;
-	}
+            Material material = objects[obj_idx].material;
+            Vector v_normal = calcNormalVector(intersection, objects[obj_idx]);
+            Vector v_camera = calcCenterVector(intersection, origin);
+            
+            for(std::Vector<Light*>::iterator light = lights.begin(); light != lights.end(); ++light){
+                
+                Vector v_light = calcLightVector(intersection, *light);
+                Vector v_specular = calcSpecVector(v_normal, v_light);
 
-	double RayTracer::findClosestIntersection(const Vector &ray){
+                specular_comp += calc calcSpecularComp(v_specular, v_camera, *light, material)
+                diffuse_comp += calcDifusalComp(v_normal, v_light, *light, material);
+            }
 
-	}
+            Color ambient_comp = getAmbientComp(material.obj, ambient_light_intensity);
 
-	Vector RayTracer::calcCenterVector(
-									const Point &intersection, 
-									const Point &origin){
-		return Vector(origin - intersection).normalize();
-	}
+            if(level){
+                //Reflection
+                Vector v_reflection = calcReflectionVector(ray, normal);
+                Color reflection_comp = castRay(v_reflection, intersection, level-1);
 
-	Vector RayTracer::calcLightVector(
-									const Point &intersection,
-									const Light &light){
+                //Refraction
+                Vector v_refraction = calcRefractionVector(ray, normal, material)
+                Color refraction_comp = castRay(v_refraction, intersection, level-1);
 
-		return Vector(light.pos - intersection).normalize();
-	}
+                pixel_color = ambient_comp + specular_comp + diffuse_comp + refraction_comp + reflection_comp;
+            }else{
+                pixel_color = ambient_comp + specular_comp + diffuse_comp;
+            }
 
-	Vector RayTracer::calcSpecVector(
-									const Vector &normal,
-									const Vector &light,){
-		
-		spec_vector = Vector();
-		double sn = dot_product(light, normal);
-		double nn = dot_product(normal, normal);
+        }else{
+            pixel_color = Color();
+        }
 
-		spec_vector -= light;
-		spec_vector += normal*(2*sn/nn);
+        return pixel_color;
+    }
 
-		spec_vector.normalize()
+    Object *RayTracer::findClosestIntersection(const Vector &ray){
 
-		return spec_vector;
-	}
+        double min_dist = -1.0;
+        Object *min_obj = NULL;
 
-	Color RayTracer::getAmbientComp(
-						const Color objColor,
-						double intensity){
-		
-		return objColor*intensity;
-	}
+        for(std::Vector<Object*>::iterator obj = objects.begin(); obj != objects.end(); ++obj){
+            
+            double dist = obj.intersect(ray);
 
-	Color RayTracer::calcDifusalComp(
-						const Vector &normal,
-						const Vector &v_light,
-						const Light &light,
-						const Material &material){
+            if(dist < min_dist && dist > 0){
+                min_dist = dist;
+                min_obj = &(*obj);
+            }
+        }
+        return min_obj;
+    }
 
-		double nl = dot_product(normal, light_v);
-		double nSize = sqrt(dot_product(normal, normal));
-		double lSize = sqrt(dot_product(v_light, v_light));
+    Vector RayTracer::calcCenterVector(
+                                    const Point &intersection, 
+                                    const Point &origin){
 
-		i_diffuse = material.diffuse_coeff * max(0.0, nc/(nSize*lSize));
-		Color diffuse_comp = Color(i_diffuse * material.diffuse_color);
+        return Vector(origin - intersection).normalize();
+    }
 
-		return diffuse_comp;
-	}
+    Vector RayTracer::calcLightVector(
+                                    const Point &intersection,
+                                    const Light &light){
 
-	Color RayTracer::calcSpecularComp(
-						const Vector &specular,
-						const Vector &camera,
-						const Light &light,
-						const Material &material){
+        return Vector(light.pos - intersection).normalize();
+    }
 
-		double sc = dot_product(specular, camera);
-		double sSize = sqrt(dot_product(specular, specular));
-		double cSize = sqrt(dot_product(camera, camera));
+    Vector RayTracer::calcSpecVector(
+                                    const Vector &normal,
+                                    const Vector &light,){
+        
+        spec_vector = Vector();
+        double sn = dot_product(light, normal);
+        double nn = dot_product(normal, normal);
 
-		double i_specular = material.specular_coeff * pow(max(0.0, sc/(sSize*cSize)), material.f);
-		Color specular_comp = Color(i_specular * material.specular_color);
+        spec_vector -= light;
+        spec_vector += normal*(2*sn/nn);
 
-		return specular_comp;
-	}
+        spec_vector.normalize()
 
-	Vector RayTracer::calcReflectionVector(
-										const Vector &normal,
-										const Vector &incident){
+        return spec_vector;
+    }
+
+    Color RayTracer::getAmbientComp(
+                        const Color objColor,
+                        double intensity){
+        
+        return objColor*intensity;
+    }
+
+    Color RayTracer::calcDifusalComp(
+                        const Vector &normal,
+                        const Vector &v_light,
+                        const Light &light,
+                        const Material &material){
+
+        double nl = dot_product(normal, light_v);
+        double nSize = sqrt(dot_product(normal, normal));
+        double lSize = sqrt(dot_product(v_light, v_light));
+
+        i_diffuse = material.diffuse_coeff * max(0.0, nc/(nSize*lSize));
+        Color diffuse_comp = Color(i_diffuse * material.diffuse_color);
+
+        return diffuse_comp;
+    }
+
+    Color RayTracer::calcSpecularComp(
+                        const Vector &specular,
+                        const Vector &camera,
+                        const Light &light,
+                        const Material &material){
+
+        double sc = dot_product(specular, camera);
+        double sSize = sqrt(dot_product(specular, specular));
+        double cSize = sqrt(dot_product(camera, camera));
+
+        double i_specular = material.specular_coeff * pow(max(0.0, sc/(sSize*cSize)), material.f);
+        Color specular_comp = Color(i_specular * material.specular_color);
+
+        return specular_comp;
+    }
+
+    Vector RayTracer::calcReflectionVector(
+                                        const Vector &normal,
+                                        const Vector &incident){
 
 
-	}
+    }
 
-	Vector RayTracer::calcRefractionVector(
-										const Vector &incident,
-										const Materia &material){
-		
-	}
+    Vector RayTracer::calcRefractionVector(
+                                        const Vector &incident,
+                                        const Materia &material){
+        
+    }

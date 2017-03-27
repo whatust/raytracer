@@ -1,4 +1,4 @@
-#ifdef __LIGHT_H__
+#ifndef __LIGHT_H__
 #define __LIGHT_H__
 
 #include "vector.h"

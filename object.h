@@ -10,6 +10,6 @@ private:
 	object_t type;
 
 public:
-	Point intersect(Vector const &v);
+	Point intersect(Vector const &v, Point const &p);
 
 };

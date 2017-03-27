@@ -1,4 +1,4 @@
-#ifdef __POINT_H__
+#ifndef __POINT_H__
 #define __POINT_H__
 
 class Point{
@@ -20,3 +20,5 @@ public:
 
 	Point operator -= (Point const p);
 };
+
+#endif

@@ -1,4 +1,4 @@
-#ifdef __RAY_TRACER_H__
+#ifndef __RAY_TRACER_H__
 #define __RAY_TRACER_H__
 
 #include "vector.h"
@@ -12,7 +12,10 @@ public:
 	std::vector<Object*> objects;
 
 	void loadObjects(std::string file_name);
+
 	void loadLights(std::string file_name);
+
+	void render();
 
 private:
 	void addObject(Object *obj);
@@ -39,3 +42,5 @@ private:
 
 	Color calcRefractiveLight(const Point intersection);
 };
+
+#endif

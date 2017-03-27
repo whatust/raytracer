@@ -1,4 +1,4 @@
-#ifdef __VECTOR_H__
+#ifndef __VECTOR_H__
 #define __VECTOR_H__
 
 class Vector{

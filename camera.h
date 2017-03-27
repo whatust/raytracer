@@ -2,7 +2,7 @@
 //William Tustumi;
 //13 Mar, 2016
 
-#ifdef __CAMERA_H__
+#ifndef __CAMERA_H__
 #define __CAMERA_H__
 
 class Camera{
