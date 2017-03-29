@@ -1,5 +1,5 @@
 #include <math.h>
-#include "plane.h"
+#include "plane.hpp"
 
 double Plane::itersect(const Vector &e, const Vector &d){
 	

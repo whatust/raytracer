@@ -1,9 +1,9 @@
-#ifdef __OBJECT_H__
+#ifndef __OBJECT_H__
 #define __OBJECT_H__
 
-typedef enum object_t{SPHERE, PLANE};
+typedef enum object_{SPHERE, PLANE} object_t;
 
-class object{
+class Object{
 	
 private:
 	Point center;
@@ -13,3 +13,5 @@ public:
 	Point intersect(Vector const &v, Point const &p);
 
 };
+
+#endif

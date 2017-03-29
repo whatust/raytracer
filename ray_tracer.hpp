@@ -1,9 +1,13 @@
 #ifndef __RAY_TRACER_H__
 #define __RAY_TRACER_H__
 
-#include "vector.h"
-#include "camera.h"
-#include "light.h"
+#include <string>
+#include <vector>
+#include "vector.hpp"
+#include "camera.hpp"
+#include "light.hpp"
+#include "object.hpp"
+#include "material.hpp"
 
 class RayTracer{
 public:
@@ -36,7 +40,7 @@ private:
 
 	Color calcDifusalComp(const Vector &normal, const Vector &v_light, const Light &light, const Material &material);
 
-	Color calcSpecularComp(const Vector &specular, const &camera, const Light &light, const Material &material);
+	Color calcSpecularComp(const Vector &specular, const Camera &camera, const Light &light, const Material &material);
 
 	Color calcReflectiveLight(const Point intersection);
 

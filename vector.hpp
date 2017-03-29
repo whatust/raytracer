@@ -1,6 +1,8 @@
 #ifndef __VECTOR_H__
 #define __VECTOR_H__
 
+#include "point.hpp"
+
 class Vector{
 	
 public:
@@ -8,11 +10,11 @@ public:
 	
 	Vector() : x(0), y(0), z(0), w(1){};
 
-	Vector(double x_, double y_, double z_) :
-		x(x_), y(y_), z(z_), w(1.0){};
+	Vector(Point p);
 
-	Vector(double x_, double y_, double z_, double w_) :
-		x(x_), y(y_), z(z_), w(w_){};
+	Vector(double x, double y, double z);
+
+	Vector(double x, double y, double z, double w);
 
 	void normalize();
 

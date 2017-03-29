@@ -1,6 +1,18 @@
 #include <math.h>
 #include "vector.h"
 
+
+Vector::Vector() : x(0), y(0), z(0), w(1){};
+
+Vector::Vector(Point p) : \
+		x(p.x), y(p.y), z(p.z), w(1.0);
+
+Vector::Vector(double x, double y, double z) : \
+		x(x), y(y), z(z), w(1.0){};
+
+Vector::Vector(double x, double y, double z, double w) : \
+		x(x), y(y), z(z), w(w){};
+
 void Vector::normalize(){
 	double l = this->length();
 	x = x/l; y = y/l; z = z/l;

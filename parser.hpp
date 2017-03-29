@@ -1,6 +1,7 @@
 #include <argp.h>
-#include <stdbool.h>
 #include <iostream>
+#include <stdbool.h>
+#include <stdlib.h>
 
 typedef enum { CHARACTER_MODE, WORD_MODE, LINE_MODE } Mode;
 
@@ -64,7 +65,7 @@ arguments_t *initParser(int argc, char *argv[]){
 
     arguments_t *arguments;
 
-    arguments = new arguments;
+    arguments = new arguments_t;
 
     //Default Values
     arguments->width = 800;
