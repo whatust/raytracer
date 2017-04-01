@@ -6,16 +6,9 @@ public:
 	int width;
 	int height;
 
-	Window(int w, int h){
-		width = w;
-		height = h;
-	}
+	Window(int w, int h);
 
-	Window(){
-		width = 800;
-		height = 600;
-	}
-
+	Window();
 };
 
 #endif

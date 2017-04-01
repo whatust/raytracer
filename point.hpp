@@ -8,7 +8,7 @@ public:
 
 	Point();
 
-	Point(double x_, double y_, double z_);
+	Point(double x, double y, double z);
 
 	Point operator + (Point const &p) const;
 

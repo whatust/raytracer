@@ -1,16 +1,19 @@
 #ifndef __OBJECT_H__
 #define __OBJECT_H__
 
+#include "point.hpp"
+#include "vector.hpp"
+
 typedef enum object_{SPHERE, PLANE} object_t;
 
 class Object{
-	
-private:
+public:
 	Point center;
 	object_t type;
 
-public:
-	Point intersect(Vector const &v, Point const &p);
+	Object(object_t t);
+	Object(object_t t, Point c);
+	virtual double intersect(Vector const &e, Vector const &d) = 0;
 
 };
 

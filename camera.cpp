@@ -20,9 +20,9 @@ Camera::Camera(Point pos, Point lookAt, Vector up, uint32_t width, uint32_t heig
 }
 
 void Camera::CalcWUV(){
-	w = Vector(lookAt - pos).normalize();
-	u = up.cross(w).normalize();
-	v = w.cross(u);
+	n = Vector(lookAt - pos).normalize();
+	u = cross_product(up, n).normalize();
+	v = cross_product(n, u);
 
 	return;
 }

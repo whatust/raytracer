@@ -1,11 +1,18 @@
 #ifndef __PLANE_H__
 #define __PLANE_H__
 
-class Plane extend Object{
+#include "object.hpp"
+#include "point.hpp"
+#include "vector.hpp"
+
+class Plane: public Object{
+public:
+	Plane();
+	Plane(Point p);
+	double intersect(Vector const &e, Vector const &d);
 	
 private:
-	double radius;
-
+	Vector normal;
 };
 
 #endif

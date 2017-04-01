@@ -16,9 +16,9 @@ public:
 
 	Vector(double x, double y, double z, double w);
 
-	void normalize();
-
 	double lenght();
+
+	Vector normalize();
 
 	Vector operator + (Vector const v) const;
 

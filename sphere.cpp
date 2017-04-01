@@ -1,7 +1,7 @@
 #include <math.h>
-#include "sphere.h"
+#include "sphere.hpp"
 
-double Sphere::itersect(const Vector &e, const Vector &d){
+double Object::itersect(const Vector &e, const Vector &d){
 	
 	double eSize = dot_product(e,e)-1;
 	double dSize = dot_product(d,d);

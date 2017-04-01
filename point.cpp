@@ -13,12 +13,12 @@ Point Point::operator -(Point const &p) const{
 	return Point(x-p.x, y-p.y, z-p.z);
 }
 
-Point Point::operator +=(Point const &p) const{
+Point Point::operator +=(Point const &p){
 	x += p.x;	y += p.y;	z += p.z;
-	return this;
+	return *this;
 }
 
-Point Point::operator -=(Point const &p) const{
+Point Point::operator -=(Point const &p){
 	x -= p.x;	y -= p.y;	z -= p.z;
-	return this;
+	return *this;
 }

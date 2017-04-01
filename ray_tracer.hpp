@@ -28,7 +28,13 @@ private:
 
 	Point calcClosestIntersection(Vector &ray);
 
-	Color castRayOnScreenPixel(uint32_t x, uint32_t y);
+	Color castRay(const Vector &ray, const Point origin, int level);
+
+	Object *findClosestIntersection(const Vector &ray, Object **obj);
+
+	bool RayTracer::isShadow(const Vector v_light, const Point o_light);
+
+	Vector calcCameraRay(const Camera &camera, double width, double height, int i, int j);
 
 	Vector calcCenterVector(const Point &intersection, const Camera &camera);
 
@@ -42,9 +48,9 @@ private:
 
 	Color calcSpecularComp(const Vector &specular, const Camera &camera, const Light &light, const Material &material);
 
-	Color calcReflectiveLight(const Point intersection);
-
-	Color calcRefractiveLight(const Point intersection);
+	Vector calcReflectionVector(const Vector &normal, const Vector &incident);
+	
+	Vector calcRefractionVector(const Vector &incident, const Material &material);
 };
 
 #endif

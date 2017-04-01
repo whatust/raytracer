@@ -22,17 +22,17 @@ Vector RayTracer::calcCameraRay(const Camera &camera,
 
     Vector r;
 
-    double x = −1.0 * camera.near * camera−>n.x +
-    width * (2.0 * i / camera.w.width − 1.0) * camera.u.x +
-    height * (2.0 * j / camera.w.height − 1.0) * camera.v.x;
+    double x = -1.0 * camera.near * camera.n.x +
+    width * (2.0 * i / camera.window.width - 1.0) * camera.u.x +
+    height * (2.0 * j / camera.window.height - 1.0) * camera.v.x;
 
-    double y = −1.0 * camera.near * camera−>n.y +
-    width * (2.0 * i / camera.w.width − 1.0) * camera.u.y +
-    height * (2.0 * j / camera.w.height − 1.0) * camera.v.y;
+    double y = -1.0 * camera.near * camera.n.y +
+    width * (2.0 * i / camera.window.width - 1.0) * camera.u.y +
+    height * (2.0 * j / camera.window.height - 1.0) * camera.v.y;
 
-    double z = −1.0 * camera.near * camera−>n.z +
-    width * (2.0 * i / camera.w.width − 1.0) * camera.u.z +
-    height * (2.0 * j / camera.w.height − 1.0) * camera.v.z
+    double z = -1.0 * camera.near * camera.n.z +
+    width * (2.0 * i / camera.window.width - 1.0) * camera.u.z +
+    height * (2.0 * j / camera.window.height - 1.0) * camera.v.z;
 
     double w = 0.0;
     r = Vector(x, y, z, w);
@@ -41,7 +41,7 @@ Vector RayTracer::calcCameraRay(const Camera &camera,
 }
 
 bool RayTracer::isShadow(
-                        const Vector v_light
+                        const Vector v_light,
                         const Point o_light){
 
     for(std::Vector<Object*>::iterator obj = objects.begin(); obj != objects.end(); ++obj){
@@ -51,23 +51,43 @@ bool RayTracer::isShadow(
     return false;
 }
 
+Object *RayTracer::findClosestIntersection(const Vector &ray, Object **object){
+
+    double min_dist = -1.0;
+    Object *min_obj = NULL;
+
+    for(std::Vector<Object*>::iterator obj = objects.begin(); obj != objects.end(); ++obj){
+        
+        double dist = obj.intersect(ray);
+
+        if(dist < min_dist && dist > 0){
+            min_dist = dist;
+            min_obj = &(*obj);
+        }
+    }
+
+    *object = *&(obj);
+
+    return min_obj;
+}
+
 Color RayTracer::castRay(
                         const Vector &ray,
                         const Point origin,
                         int level){
 
-    int obj_idx=0;
+    Object *object;
     Color pixel_color;
 
-    intersection = findClosestIntersection(ray, &obj_idx);
+    intersection = findClosestIntersection(ray, &object);
 
-    if(obj_idx >= 0){
+    if(object != NULL){
         
         Color specular_comp = Color();
         Color diffuse_comp = Color();
 
-        Material material = objects[obj_idx].material;
-        Vector v_normal = calcNormalVector(intersection, objects[obj_idx]);
+        Material material = object->material;
+        Vector v_normal = calcNormalVector(intersection, *object);
         Vector v_camera = calcCenterVector(intersection, origin);
         
         for(std::Vector<Light*>::iterator light = lights.begin(); light != lights.end(); ++light){
@@ -100,23 +120,6 @@ Color RayTracer::castRay(
     }
 
     return pixel_color;
-}
-
-Object *RayTracer::findClosestIntersection(const Vector &ray){
-
-    double min_dist = -1.0;
-    Object *min_obj = NULL;
-
-    for(std::Vector<Object*>::iterator obj = objects.begin(); obj != objects.end(); ++obj){
-        
-        double dist = obj.intersect(ray);
-
-        if(dist < min_dist && dist > 0){
-            min_dist = dist;
-            min_obj = &(*obj);
-        }
-    }
-    return min_obj;
 }
 
 Vector RayTracer::calcCenterVector(
