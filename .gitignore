@@ -1,0 +1,4 @@
+*.o
+*render
+*.out
+*test
