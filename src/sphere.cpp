@@ -1,7 +1,9 @@
 #include <math.h>
 #include "sphere.hpp"
 
-double Sphere::intersect(Point &e, Vector &d){
+double Sphere::intersect(
+						Point &e,
+						Vector &d){
 	
 	double eSize = dot_product(e,e)-1;
 	double dSize = dot_product(d,d);

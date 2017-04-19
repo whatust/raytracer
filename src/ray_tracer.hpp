@@ -18,11 +18,7 @@ public:
 	void render();
 
 private:
-	Camera camera;
-	std::vector<Light*> lights;
-	std::vector<Object*> objects;
-	double ambient_light_intensity;
-
+	
 	void addObject(Object *obj);
 	void addLight(Light *light);
 	Point calcClosestIntersection(Vector &ray);

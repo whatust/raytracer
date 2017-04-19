@@ -16,7 +16,8 @@ void RayTracer::addLight(Light *light){
     return;
 }
 
-Vector RayTracer::calcCameraRay(Camera &camera,
+Vector RayTracer::calcCameraRay(
+                                Camera &camera,
                                 double width, double height, 
                                 int i, int j){
 
@@ -51,7 +52,9 @@ bool RayTracer::isShadow(
     return false;
 }
 
-Point RayTracer::findClosestIntersection(Vector &ray, Object **object){
+Point RayTracer::findClosestIntersection(
+                                        Vector &ray,
+                                        Object **object){
 
     double min_dist = -1.0;
     Object *min_obj = NULL;
@@ -154,17 +157,17 @@ Vector RayTracer::calcSpecVector(
 }
 
 Color RayTracer::calcAmbientComp(
-                    Color objColor,
-                    double intensity){
+                                Color objColor,
+                                double intensity){
     
     return objColor*intensity;
 }
 
 Color RayTracer::calcDifusalComp(
-                    Vector &normal,
-                    Vector &v_light,
-                    Light &light,
-                    Material &material){
+                                Vector &normal,
+                                Vector &v_light,
+                                Light &light,
+                                Material &material){
 
     double nl = dot_product(normal, v_light);
     double nSize = sqrt(dot_product(normal, normal));
@@ -177,10 +180,10 @@ Color RayTracer::calcDifusalComp(
 }
 
 Color RayTracer::calcSpecularComp(
-                    Vector &specular,
-                    Vector &camera,
-                    Light &light,
-                    Material &material){
+                                Vector &specular,
+                                Vector &camera,
+                                Light &light,
+                                Material &material){
 
     double sc = dot_product(specular, camera);
     double sSize = sqrt(dot_product(specular, specular));
@@ -199,9 +202,9 @@ Vector RayTracer::calcReflectionVector(
 
 }
 
-    Vector calcRefractionVector(
-                                Vector &incidence,
-                                Vector &normal,
-                                Material &material){
-    
+Vector calcRefractionVector(
+                            Vector &incidence,
+                            Vector &normal,
+                            Material &material){
+
 }

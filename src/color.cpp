@@ -8,7 +8,9 @@ Color::Color(int red, int green, int blue) : red(red), green(green), blue(blue){
 
 Color::~Color(){}
 
-void Color::swap(Color& first, Color& second){
+void Color::swap(
+				Color& first,
+				Color& second){
 
 	using std::swap;
 

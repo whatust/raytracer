@@ -12,6 +12,10 @@ class Point{
 		Point(double x, double y, double z);
 		~Point();
 
+		double get_x();
+		double get_y();
+		double get_z();
+
 		Point& operator=(Point other);
 		Point& operator+=(const Point &rhs);
 		Point& operator-=(const Point &rhs);
@@ -20,10 +24,6 @@ class Point{
 
 		void print();
 		void swap(Point& first, Point& second);
-
-		double get_x();
-		double get_y();
-		double get_z();
 
 	private:
 		double x, y, z;

@@ -7,6 +7,10 @@ Point::Point(double x, double y, double z) : x(x), y(y), z(z){}
 
 Point::~Point(){}
 
+double Point::get_x(){return this->x;}
+double Point::get_y(){return this->y;}
+double Point::get_z(){return this->z;}
+
 void Point::swap(Point& first, Point& second){
 
 	using std::swap;
@@ -50,7 +54,3 @@ Point Point::operator-(const Point &rhs){
 void Point::print(){
 	std::cout << this->x << " " << this->y << " " << this->z << std::endl;
 }
-
-double Point::get_x(){return this->x;}
-double Point::get_y(){return this->y;}
-double Point::get_z(){return this->z;}

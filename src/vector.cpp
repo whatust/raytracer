@@ -13,7 +13,13 @@ Vector::Vector(double x, double y, double z) : \
 Vector::Vector(double x, double y, double z, double w) : \
 		x(x), y(y), z(z), w(w){};
 
-void Vector::swap(Vector& first, Vector& second){
+double Vector::get_x(){return this->x;}
+double Vector::get_y(){return this->y;}
+double Vector::get_z(){return this->z;}
+
+void Vector::swap(
+				Vector& first,
+				Vector& second){
 
 	using std::swap;
 
@@ -114,7 +120,3 @@ Point Vector::findPoint(double d){
 void Vector::print(){
 	std::cout << this->x << " " << this->y << " " << this->z << std::endl;
 }
-
-double Vector::get_x(){return this->x;}
-double Vector::get_y(){return this->y;}
-double Vector::get_z(){return this->z;}

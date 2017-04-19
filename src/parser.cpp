@@ -5,11 +5,17 @@ Parser::Parser() : version(1.0), doc(""), args_doc(""){}
 Parser::Parser(char version[], char doc[], char args_doc[]) : \
 	version(atof(version)),	doc(doc), args_doc(args_doc){}
 
-bool Parser::stob(const std::string str){
+bool Parser::stob(
+				const std::string str){
+
 	return (str.compare("True") == 0);
 }
 
-void Parser::addArgument(const std::string name, const std::string default_value, const std::string type, const std::string help_message){
+void Parser::addArgument(
+					const std::string name,
+					const std::string default_value,
+					const std::string type,
+					const std::string help_message){
 
 	if(type.compare("int") == 0){
 		TypedValue<int> *conv_value = new TypedValue<int>(std::stoi(default_value), type, help_message);
@@ -54,12 +60,9 @@ void Parser::printHelp(){
 	return;
 }
 
-void Parser::setValue(const std::string name, const std::string value){
-	//argument_list[name]->setValue(value);
-}
-
-void Parser::parseArguments(int argc, char* argv[]){
-
+void Parser::parseArguments(
+						int argc,
+						char* argv[]){
 
 	for(int idx = 1; idx < argc; idx++){
 		
@@ -69,7 +72,7 @@ void Parser::parseArguments(int argc, char* argv[]){
 		std::map<std::string, Value *>::iterator it;
 		it = argument_list.find(argv[arg_idx]);
 
-		setValue(argv[arg_idx], argv[val_idx]);
+		it->setValue(argv[arg_idx], argv[val_idx]);
 	}
 	return;
 }

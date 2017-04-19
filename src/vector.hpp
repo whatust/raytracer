@@ -14,6 +14,10 @@ class Vector{
 		Vector(double x, double y, double z);
 		Vector(double x, double y, double z, double w);
 
+		double get_x();
+		double get_y();
+		double get_z();
+
 		Vector& operator=(Vector rhs);
 		Vector& operator+=(const Vector &rhs);
 		Vector& operator-=(const Vector &rhs);
@@ -32,10 +36,6 @@ class Vector{
 		double dot_product(const Vector &other);
 		Vector cross_product(const Vector &rhs);
 		Point findPoint(double d);
-
-		double get_x();
-		double get_y();
-		double get_z();
 
 	private:
 

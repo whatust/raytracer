@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 
+#include "camera.hpp"
+#include "object.hpp"
 #include "sphere.hpp"
 #include "plane.hpp"
 
@@ -16,9 +18,10 @@ class Scene{
 		void saveScene(file_name);
 
 	private:
-		double ambient_intensity;
-		std::vector<Lights *> lights;
-		std::vector<object *> object;
- }
+		Camera camera;
+		std::vector<Light*> lights;
+		std::vector<Object*> objects;
+		double ambient_light_intensity;
+}
 
 #endif
