@@ -9,6 +9,7 @@
 #include "object.hpp"
 #include "plane.hpp"
 #include "light.hpp"
+#include "parser.hpp"
 
 void testCamera();
 void testColor();
@@ -18,6 +19,7 @@ void testWindow();
 void testMaterial();
 void testPlane();
 void testLight();
+void testParser();
 
 int main(){
 
@@ -29,6 +31,7 @@ int main(){
 	testMaterial();
 	testPlane();
 	testLight();
+	testParser();
 
 	return 0;
 }
@@ -317,3 +320,20 @@ void testLight(){
 	l3.print();
 }
 
+void testParser(){
+
+	Parser parser = Parser();
+
+	parser.addArgument("asd", "1", "int", "help");
+	parser.addArgument("ase", "2", "double", "value_list");
+	parser.addArgument("asf", "3.0", "double", "value_list");
+
+	parser.printArguments();
+	parser.printHelp();
+
+	parser.addArgument("asg", "True", "bool", "value_list");
+	parser.addArgument("ash", "asd", "str", "value_list");
+	parser.addArgument("asi", "6", "int", "value_list");
+
+	parser.deleteArguments();
+}

@@ -1,28 +1,43 @@
 #ifndef __PARSER_H__
 #define __PARSER_H__ 
 
+#include <cstdlib>
 #include <iostream>
+#include <map>
+#include <memory>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 #include <vector>
+#include <utility>
+#include <typeinfo>
 
-const char *argp_program_version = "ray_tracer 0.1";
-static char doc[] = "Simple Ray tracer in C++ and CUDA";
-static char args_doc[] = "[FILENAME]... -s SCENE_FILE_NAME -w WIDTH -h HEIGHT -l LEVEL";
+
+#include "value.hpp"
+
 
 class Parser{
 private:
-    char argp_program_version[];
-    char doc[];
-    char args_doc[];
-    std::vector<argument_t> argument_list;
+	double version;
+    std::string argp_program_version;
+    std::string doc;
+    std::string args_doc;
+	std::map<std::string, Value*> argument_list;
+
+	bool stob(const std::string str);
 
 public:
     Parser();
-    Parser(char[] version, char[] doc, char[] arg_doc);
-    void addArgument(char[] flag, char[] type, char[] default_value, bool optional, char[] help_message);
-    void printArguments(const arguments_t &args);
-}
+    Parser(char version[], char doc[], char arg_doc[]);
+
+	void addArgument(const std::string name, const std::string default_value, const std::string type, const std::string help_message);
+	void setValue(const std::string name, const std::string value);
+	void parseArguments(int argc, char* argv[]);
+	void deleteArguments();
+
+    void printHelp();
+    void printArguments();
+};
 
 #endif
