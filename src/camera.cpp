@@ -1,45 +1,60 @@
 #include "camera.hpp"
 
-Camera::Camera() : 
-	pos(Point(1.0, 1.0, 1.0)), lookAt(Point(0.0, 0.0, 0.0)), up(Vector(0.0, 0.0, 1.0, 1.0)), width(800), height(600){
+Camera::Camera() : near(1.0), far(25){
+	
+	lookAt = (cv::Mat_<double>(3,1) << 0,0,0);
+	up = (cv::Mat_<double>(3,1) << 0,0,1);
+	pos = (cv::Mat_<double>(3,1) << 10, 10, 10);
+
+	std::cout << "camera" << std::endl;
+	util::printMat<double>(pos);
+	util::printMat<double>(up);
+	util::printMat<double>(lookAt);
+
+	CalcWUV();
+
+	util::printMat<double>(n);
+	util::printMat<double>(u);
+	util::printMat<double>(v);
+
+}
+
+Camera::Camera(cv::Mat pos, cv::Mat lookAt, cv::Mat up):
+	pos(pos), lookAt(lookAt), up(up), near(1.0), far(25){
 	CalcWUV();
 }
 
-Camera::Camera(Point pos, Point lookAt, Vector up):
-	pos(pos), lookAt(lookAt), up(up), width(800), height(600){
-	CalcWUV();
-}
-
-Camera::Camera(Point pos, Point lookAt, Vector up, uint32_t width, uint32_t height) : \
-	pos(pos), lookAt(lookAt), up(up), width(width), height(height){
+Camera::Camera(cv::Mat pos, cv::Mat lookAt, cv::Mat up, uint32_t width, uint32_t height) : \
+	pos(pos), lookAt(lookAt), up(up), near(1.0), far(25){
+	window = Window(width, height);
 	CalcWUV();
 }
 
 void Camera::print(){
 	std::cout << "pos ";
-	pos.print();
+	util::printMat<double>(pos);
 
 	std::cout << "lookAt ";
-	lookAt.print();
+	util::printMat<double>(lookAt);
 
 	std::cout << "up ";
-	up.print();
+	util::printMat<double>(up);
 
 	std::cout << "n ";
-	n.print();
+	util::printMat<double>(n);
 
 	std::cout << "u ";
-	u.print();
+	util::printMat<double>(u);
 
 	std::cout << "v ";
-	v.print();
+	util::printMat<double>(v);
 
 	std::cout << width << " " << height << std::endl;
 }
 
 void Camera::CalcWUV(){
-	n = Vector(pos - lookAt).normalize();
-	u = up.cross_product(n).normalize();
-	v = n.cross_product(u);
+	cv::normalize((pos - lookAt), n);
+	cv::normalize(up.cross(n), u);
+	cv::normalize(n.cross(u), v);
 }
 

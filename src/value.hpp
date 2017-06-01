@@ -22,7 +22,11 @@ class Value{
 			return help_message;
 		}
 
-	private:
+		std::string getType(){
+			return type;
+		}
+
+	protected:
 		std::string type;
 		std::string help_message;
 };
@@ -34,15 +38,18 @@ class TypedValue : public Value{
 		TypedValue(const T& default_value, const std::string &type, const std::string &help_message) : 
 			Value(type, help_message), value(default_value){}
 
-		~TypedValue() : ~Value::Value(){}
+		~TypedValue(){}
 
 		void print(){
-			Value::print();
-			std::cout << value << std::endl;
+			std::cout << type << ":" << value << " - " << help_message << std::endl;
 		}
 
 		void setValue(const T& value_){
-			value = value_;
+		value = value_;
+		}
+
+		T getValue(){
+			return value;
 		}
 
 	private:

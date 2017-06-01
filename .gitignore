@@ -2,3 +2,6 @@
 *render
 *.out
 *test
+src/raytracer
+src/value
+src/render

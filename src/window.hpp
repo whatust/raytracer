@@ -10,6 +10,9 @@ class Window{
 		Window();
 		~Window();
 
+		uint32_t getWidth();
+		uint32_t getHeight();
+
 		void print();
 	private:
 		uint32_t width;

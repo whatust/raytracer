@@ -29,12 +29,15 @@ private:
 
 public:
     Parser();
-    Parser(char version[], char doc[], char arg_doc[]);
+    Parser(const std::string &version, const std::string &doc, const std::string &args_doc);
 
 	void addArgument(const std::string name, const std::string default_value, const std::string type, const std::string help_message);
 	void setValue(const std::string name, const std::string value);
 	void parseArguments(int argc, char* argv[]);
 	void deleteArguments();
+
+	template<typename T>
+	T getValue(const std::string name);
 
     void printHelp();
     void printArguments();

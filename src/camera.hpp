@@ -4,8 +4,11 @@
 
 #include <iostream>
 #include <stdint.h>
-#include "point.hpp"
-#include "vector.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
+#include "util.hpp"
 #include "window.hpp"
 
 #ifndef __CAMERA_H__
@@ -14,17 +17,17 @@
 class Camera{
 
 public:
-	Point lookAt;
-	Point pos;
-	Vector up;
-	Vector u, v, n;
+	cv::Mat lookAt;
+	cv::Mat pos;
+	cv::Mat up;
+	cv::Mat u, v, n;
 	Window window;
 	double near, far;
 	uint32_t width, height;
 
 	Camera();
-	Camera(Point pos, Point lookAt, Vector up);
-	Camera(Point pos, Point lookAt, Vector up, uint32_t width, uint32_t height);
+	Camera(cv::Mat pos, cv::Mat lookAt, cv::Mat up);
+	Camera(cv::Mat pos, cv::Mat lookAt, cv::Mat up, uint32_t width, uint32_t height);
 
 	void print();
 

@@ -1,24 +1,38 @@
 #ifndef __OBJECT_H__
 #define __OBJECT_H__
 
-#include "point.hpp"
-#include "vector.hpp"
+#include <memory>
+#include <math.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
 #include "material.hpp"
 
 typedef enum object_{SPHERE, PLANE} object_t;
 
 class Object{
 protected:
-	Point center;
+	cv::Mat M;
+	cv::Mat Minv;
 	object_t type;
-	Material material;
+	std::shared_ptr<Material> material;
 	
 public:
 
-	Object(object_t t);
-	Object(object_t t, Point c);
-	virtual Vector getNormal(Point &p) = 0;
-	virtual double intersect(Point &p, Vector &d) = 0;
+	Object(object_t t, std::shared_ptr<Material> materila_ptr);
+	Object(object_t t, cv::Mat M, std::shared_ptr<Material> materila_ptr);
+	Object(object_t t, double pos[3], double rot[3], double scl[3], std::shared_ptr<Material> materila_ptr);
+
+	std::shared_ptr<Material> getMaterial();
+
+	cv::Mat getM();
+	cv::Mat getMinv();
+
+	virtual cv::Mat getNormal(const cv::Mat &p) = 0;
+	virtual double intersect(const cv::Mat &p, const cv::Mat &d) = 0;
+
+	void print();
 };
 
 #endif

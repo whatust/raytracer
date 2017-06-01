@@ -8,6 +8,10 @@ Window::Window(uint32_t w, uint32_t h) : \
 
 Window::~Window(){}
 
+uint32_t Window::getWidth(){return width;}
+
+uint32_t Window::getHeight(){return height;}
+
 void Window::print(){
 	std::cout << width << " " << height << std::endl;
 }

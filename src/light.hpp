@@ -2,21 +2,25 @@
 #define __LIGHT_H__
 
 #include <iostream>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
-#include "point.hpp"
-#include "vector.hpp"
-#include "color.hpp"
+#include "util.hpp"
 
 class Light{
 	private:
-		Point pos;
-		Color color;
+		cv::Mat pos;
+		cv::Mat color;
 		double intensity;
 
 	public:
 		Light();
-		Light(Point pos, double intensity_);
-		Light(Point pos, Color color, double intensity);
+		Light(cv::Mat pos, double intensity_);
+		Light(cv::Mat pos, cv::Mat color, double intensity);
+
+		cv::Mat getPosition() const;
+		cv::Mat getColor() const;
 
 		void print();
 };
