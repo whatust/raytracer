@@ -30,6 +30,15 @@ Camera::Camera(cv::Mat pos, cv::Mat lookAt, cv::Mat up, uint32_t width, uint32_t
 	CalcWUV();
 }
 
+Camera::~Camera(){
+	up.release();
+	pos.release();
+	lookAt.release();
+	n.release();
+	u.release();
+	v.release();
+}
+
 void Camera::print(){
 	std::cout << "pos ";
 	util::printMat<double>(pos);

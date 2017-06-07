@@ -16,6 +16,7 @@
 class Scene{
 	public:
 		Scene();
+		Scene(const double amb_light, const uint32_t level);
 		~Scene();
 
 		void loadScene(const std::string &filename);
@@ -27,6 +28,7 @@ class Scene{
 		std::vector<Light> lights;
 
 		double getAmbientIntensity();
+		uint32_t getLevel();
 
 	private:	
 		double ambient_light_intensity;
@@ -36,6 +38,7 @@ class Scene{
 		void parseObject(std::ifstream &input_stream);
 		void parseCamera(std::ifstream &input_stream);
 		void parseMaterial(std::ifstream &input_stream);
+		void parseGeneral(std::ifstream &input_stream);
 
 };
 

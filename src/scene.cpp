@@ -1,6 +1,10 @@
 #include "scene.hpp"
 
-Scene::Scene() : ambient_light_intensity(0.1), level(0) {
+Scene::Scene() : ambient_light_intensity(0.2), level(0) {
+    camera = Camera();
+}
+
+Scene::Scene(const double amb_light, const uint32_t level) : ambient_light_intensity(amb_light), level(level) {
     camera = Camera();
 }
 
@@ -8,6 +12,10 @@ Scene::~Scene(){}
 
 double Scene::getAmbientIntensity(){
     return ambient_light_intensity;
+}
+
+uint32_t Scene::getLevel(){
+    return level;
 }
 
 void Scene::loadScene(const std::string &filename){
@@ -38,10 +46,25 @@ void Scene::loadScene(const std::string &filename){
                 parseMaterial(input_stream);
             }else if(line.compare("__CAMERA__") == 0){
                 parseCamera(input_stream);
+            }else if(line.compare("__GENERAL__") == 0){
+                parseGeneral(input_stream);
             }
         }
     }
     input_stream.close();
+    return;
+}
+
+void Scene::parseGeneral(std::ifstream &input_stream){
+
+    uint32_t l;
+    double amb_light;
+
+    input_stream >> amb_light >> l;
+
+    ambient_light_intensity = amb_light;
+    level = l;
+
     return;
 }
 
@@ -125,15 +148,15 @@ void Scene::parseMaterial(std::ifstream &input_stream){
 
     std::string name;
     uint32_t col[3];
-    double rfr, rfl, spec, diff, f;
+    double rfl, rfr, spec, diff, f, n;
 
     input_stream >> name;
     input_stream >> col[0] >> col[1] >> col[2];
-    input_stream >> rfr >> rfl >> spec >> diff >> f;
+    input_stream >> rfl >> rfr >> spec >> diff >> f >> n;
 
     cv::Mat color = (cv::Mat_<double>(3,1) << col[0],col[1],col[2]);
 
-    materials.push_back(std::shared_ptr<Material>(new Material(name, color, rfr, rfl, spec, diff, f)));
+    materials.push_back(std::shared_ptr<Material>(new Material(name, color, rfl, rfr, spec, diff, f, n)));
 
     return;
 }

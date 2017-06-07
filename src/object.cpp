@@ -37,6 +37,11 @@ Object::Object(object_t t, double pos[3], double rot[3], double scl[3], std::sha
 	Minv = M.inv();
 }
 
+Object::~Object(){
+	M.release();
+	Minv.release();
+}
+
 std::shared_ptr<Material> Object::getMaterial(){
 	return material;
 }

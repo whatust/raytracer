@@ -6,6 +6,11 @@ Light::Light(cv::Mat pos, double intensity) : pos(pos), intensity(intensity),	co
 
 Light::Light(cv::Mat pos, cv::Mat color, double intensity) : pos(pos), color(color), intensity(intensity){}
 
+Light::~Light(){
+	pos.release();
+	color.release();
+}
+
 cv::Mat Light::getPosition() const {
 	return pos;
 }

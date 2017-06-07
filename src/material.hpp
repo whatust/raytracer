@@ -17,11 +17,13 @@ class Material{
 	double specular_coeff;
 	double diffuse_coeff;
 	double f;
+	double n;
 
 	Material(const std::string name);
 	Material(const std::string name, cv::Mat color);
 	Material(const std::string name, cv::Mat color, double reflectance, double refractance);
-	Material(const std::string name, cv::Mat color, double refletance, double refractance, double specular_coeff, double diffuse_coeff, double f);
+	Material(const std::string name, cv::Mat color, double refletance, double refractance, double specular_coeff, double diffuse_coeff, double f, double n);
+	~Material();
 
 	void print();
 };

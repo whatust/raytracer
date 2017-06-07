@@ -18,6 +18,7 @@ class Light{
 		Light();
 		Light(cv::Mat pos, double intensity_);
 		Light(cv::Mat pos, cv::Mat color, double intensity);
+		~Light();
 
 		cv::Mat getPosition() const;
 		cv::Mat getColor() const;

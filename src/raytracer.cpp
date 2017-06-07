@@ -69,9 +69,10 @@ cv::Mat RayTracer::calcAmbientComp(
     return intensity * objColor;
 }
 
-cv::Mat RayTracer::calcDifusalComp(
+cv::Mat RayTracer::calcDiffuseComp(
                                 const cv::Mat &normal,
                                 const cv::Mat &v_light,
+                                const Material &material,
                                 const Light &light){
 
     double nl = normal.dot(v_light);
@@ -79,7 +80,8 @@ cv::Mat RayTracer::calcDifusalComp(
     double lSize = sqrt(v_light.dot(v_light));
 
     double i_diffuse = std::max(0.0, nl/(nSize*lSize));
-    cv::Mat diffuse_comp = i_diffuse * light.getColor();
+    //cv::Mat diffuse_comp = i_diffuse * light.getColor();
+    cv::Mat diffuse_comp = i_diffuse * material.color;
 
     /*std::cout << "func diffuse_comp ";
     util::printMat<double>(diffuse_comp);
@@ -192,9 +194,29 @@ cv::Mat RayTracer::calcReflectionVector(
     return v_reflect;
 }
 
-/*cv::Mat RayTracer::calcRefractionVector(const cv::Mat &incidence, const cv::Mat &normal, Material &material){
+cv::Mat RayTracer::calcRefractionVector(
+                                    const cv::Mat &incidence,
+                                    const cv::Mat &normal,
+                                    Material &material,
+                                    double old_n){
 
-}*/
+    double new_n = material.n;
+
+    cv::Mat v_refraction = (cv::Mat_<double>(3,1) << 0,0,0);
+
+    double ratio = old_n / new_n;
+    double in = incidence.dot(normal);
+    double sin2 = ratio * ratio * (1 - in * in);
+
+    //Critical Angle
+    if(sin2 > 1){
+        v_refraction = incidence + 2 * (-in) * normal;
+    }else{
+        v_refraction = ratio * incidence + (ratio - sqrt(1 - sin2));
+    }
+
+    return v_refraction;
+}
 
 cv::Mat RayTracer::calcIntersectionCord(const cv::Mat &origin, const cv::Mat &ray, double dist){
 
@@ -204,7 +226,8 @@ cv::Mat RayTracer::calcIntersectionCord(const cv::Mat &origin, const cv::Mat &ra
 cv::Mat RayTracer::castRay(
                         const cv::Mat &ray,
                         const cv::Mat &origin,
-                        uint8_t level){
+                        uint8_t level,
+                        double n){
 
     std::shared_ptr<Object> object;
     cv::Mat intersection;
@@ -240,7 +263,7 @@ cv::Mat RayTracer::castRay(
                 
                 cv::Mat v_specular = calcSpecVector(v_normal, v_light);
                 specular_comp += calcSpecularComp(v_specular, v_origin, material, *light);
-                diffuse_comp += calcDifusalComp(v_normal, v_light, *light);
+                diffuse_comp += calcDiffuseComp(v_normal, v_light, material, *light);
             }
         }
 
@@ -250,14 +273,25 @@ cv::Mat RayTracer::castRay(
         cv::Mat ambient_comp = calcAmbientComp(material.color, scene.getAmbientIntensity());
 
         if(level){
+
+            cv::Mat reflection_comp = (cv::Mat_<double>(3,1) << 0, 0, 0);
+            cv::Mat refraction_comp = (cv::Mat_<double>(3,1) << 0, 0, 0);
+
+
             //Reflection
-            cv::Mat v_reflection = calcReflectionVector(-ray_inv, v_normal);
-            cv::Mat new_origin = TransfPoint(calcIntersectionCord(intersection, v_reflection, MIN_DELTA), M, 1.0);
-            cv::Mat reflection_comp = castRay(TransfPoint(v_reflection, M, 0.0), new_origin, level-1) * material.reflectance;
+            if(material.reflectance > 0.0){
+                cv::Mat v_reflection = calcReflectionVector(-ray_inv, v_normal);
+                cv::Mat reflection_new_origin = TransfPoint(calcIntersectionCord(intersection, v_reflection, MIN_DELTA), M, 1.0);
+                reflection_comp = castRay(TransfPoint(v_reflection, M, 0.0), reflection_new_origin, level-1, n) * material.reflectance;
+            }
 
             //Refraction
-            //cv::Mat v_refraction = calcRefractionVector(ray, v_normal, material);
-            //cv::Mat refraction_comp = castRay(v_refraction, intersection, level-1) * material.refractance;
+            
+            if(material.refractance > 0.0){
+                cv::Mat v_refraction = calcRefractionVector(ray_inv, v_normal, material, n);
+                cv::Mat refraction_new_origin = TransfPoint(calcIntersectionCord(intersection, v_refraction, MIN_DELTA), M, 1.0);
+                refraction_comp = castRay(TransfPoint(v_refraction, M, 0.0), refraction_new_origin, level-1, material.n) * material.refractance;
+            }
 
             pixel_color = ambient_comp + specular_comp + diffuse_comp + reflection_comp;// + refraction_comp;
         }else{
@@ -289,27 +323,32 @@ void RayTracer::renderScene(){
     std::string window_name = "main_window";
     cv::namedWindow(window_name, cv::WINDOW_AUTOSIZE);
 
-    cv::Mat image_scene(scene.camera.window.getHeight(), scene.camera.window.getWidth(), CV_8UC3);
+    cv::Mat image_scene(cv::Size(scene.camera.window.getWidth(), scene.camera.window.getHeight()), CV_8UC3);
     double aspect = 1.0;
     double height = scene.camera.near*tan(M_PI/180.0 * 45.0/2.0);
     double width = height*aspect;
 
-    std::cout << "nObject" << scene.objects.size() << std::endl;
+    std::cout << scene.camera.window.getHeight() << " " << scene.camera.window.getWidth() << std::endl;
+    std::cout << image_scene.cols << " " << image_scene.rows << std::endl;
+
+    /*std::cout << "nObject" << scene.objects.size() << std::endl;
     for(std::vector<std::shared_ptr<Object>>::iterator obj = scene.objects.begin(); obj != scene.objects.end(); ++obj){
         obj->get()->print();
-    }
+    }*/
 
-    for(uint32_t r = 0; r < image_scene.rows; r++){
+    std::cout << scene.getLevel() << std::endl;
 
-        cv::Point3_<uint8_t> *Mr = image_scene.ptr<cv::Point3_<uint8_t> >(image_scene.rows-r);
+    for(uint32_t r = 0; r < image_scene.rows; ++r){
 
-        for(uint32_t c = 0; c < image_scene.cols; c++){
+        cv::Point3_<uint8_t> *Mr = image_scene.ptr<cv::Point3_<uint8_t> >(image_scene.rows - (r + 1));
+
+        for(uint32_t c = 0; c < image_scene.cols; ++c){
 
             cv::Mat ray = calcCameraRay(width, height, c, r);
-            cv::Mat color = castRay(ray, scene.camera.pos, 1);
+            cv::Mat color = castRay(ray, scene.camera.pos, scene.getLevel(), 1.0);
 
             const double *data = color.ptr<double>(0);
-            Mr[c] = cv::Point3d(data[0], data[1], data[2]);
+            Mr[c] = cv::Point3d((uint8_t)data[0], (uint8_t)data[1], (uint8_t)data[2]);
         }
     }
 
@@ -336,10 +375,9 @@ int main(){
     util::printMat<double>(rayTracer.scene.camera.u);
     util::printMat<double>(rayTracer.scene.camera.v);
 
-
     std::cout << "Testing calcCameraRay" <<std::endl;
     
-    double aspect = 16/9;
+    double aspect = 1.0;
     double height = rayTracer.scene.camera.near*tan(M_PI/180.0 * 45.0/2.0);
     double width = height*aspect;
 
@@ -429,7 +467,7 @@ int main(){
     std::cout << "spec_vector";
     util::printMat<double>(spec_vector);
 
-    Material material = Material("test_material", (cv::Mat_<double>(3,1) << 255, 150, 200), 1, 1, 0.5, 0.2, 10);
+    Material material = Material("test_material", (cv::Mat_<double>(3,1) << 255, 150, 200), 1, 1, 0.5, 0.2, 10, 1.0);
     Light light = Light();
 
     cv::Mat spec_comp = rayTracer.calcSpecularComp(spec_vector, v_camera, material, light);
@@ -438,14 +476,14 @@ int main(){
     util::printMat<double>(spec_comp);
     std::cout << std::endl;
 
-    std::cout << "Testing calcDifusalComp" << std::endl;
+    std::cout << "Testing calcDiffuseComp" << std::endl;
 
     std::cout << "v_light";
     util::printMat<double>(v_light);
     std::cout << "normal";
     util::printMat<double>(normal);
 
-    cv::Mat diffuse_comp = rayTracer.calcDifusalComp(normal, v_light, light);
+    cv::Mat diffuse_comp = rayTracer.calcDiffuseComp(normal, v_light, material, light);
 
     std::cout << "diffuse_comp";
     util::printMat<double>(diffuse_comp);
@@ -460,7 +498,7 @@ int main(){
     std::cout << "origin";
     util::printMat<double>(rayTracer.scene.camera.pos);
 
-    cv::Mat color = rayTracer.castRay(camera_ray, rayTracer.scene.camera.pos, 1);
+    cv::Mat color = rayTracer.castRay(camera_ray, rayTracer.scene.camera.pos, 1, 1.0);
 
     std::cout << "color";
     util::printMat<double>(color);

@@ -23,6 +23,7 @@ public:
 	Object(object_t t, std::shared_ptr<Material> materila_ptr);
 	Object(object_t t, cv::Mat M, std::shared_ptr<Material> materila_ptr);
 	Object(object_t t, double pos[3], double rot[3], double scl[3], std::shared_ptr<Material> materila_ptr);
+	~Object();
 
 	std::shared_ptr<Material> getMaterial();
 

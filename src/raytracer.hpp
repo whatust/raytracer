@@ -24,26 +24,26 @@ public:
 	~RayTracer();
 	
 	void renderScene();
-	cv::Mat calcCenterVector(const cv::Mat &intersection, const cv::Mat &origin);
-	cv::Mat calcAmbientComp(const cv::Mat &objColor, const double intensity);
-	cv::Mat calcSpecVector(const cv::Mat &normal, const cv::Mat &v_ight);
-	cv::Mat calcLightVector(const cv::Mat &intersection, const cv::Mat &p_light);
-	cv::Mat calcSpecularComp(const cv::Mat &v_specular, const cv::Mat &v_camera, const Material &material, const Light &light);
-	cv::Mat calcDifusalComp(const cv::Mat &normal, const cv::Mat &v_light, const Light &light);
-	cv::Mat calcReflectionVector(const cv::Mat &ray, const cv::Mat &v_normal);
-	cv::Mat calcCameraRay(double width, double height, int i, int j);
-	cv::Mat castRay(const cv::Mat &ray, const cv::Mat &origin, uint8_t level);
+	
 	bool isShadow(const cv::Mat &v_light, const cv::Mat &intersection, const Light &light);
 	double findClosestIntersection(const cv::Mat &ray, const cv::Mat &origin, std::shared_ptr<Object> *object);
 	cv::Mat calcIntersectionCord(const cv::Mat &camera_pos, const cv::Mat &ray, double dist);
 	cv::Mat TransfPoint(const cv::Mat &p, const cv::Mat &M, double w);
 
+	cv::Mat calcCenterVector(const cv::Mat &intersection, const cv::Mat &origin);
+	cv::Mat calcCameraRay(double width, double height, int i, int j);
+	cv::Mat calcLightVector(const cv::Mat &intersection, const cv::Mat &p_light);
+	cv::Mat calcSpecVector(const cv::Mat &normal, const cv::Mat &v_ight);
+	cv::Mat calcAmbientComp(const cv::Mat &objColor, const double intensity);
+	cv::Mat calcSpecularComp(const cv::Mat &v_specular, const cv::Mat &v_camera, const Material &material, const Light &light);
+	cv::Mat calcDiffuseComp(const cv::Mat &normal, const cv::Mat &v_light, const Material &material, const Light &light);
+	cv::Mat calcReflectionVector(const cv::Mat &ray, const cv::Mat &v_normal);
+	cv::Mat calcRefractionVector(const cv::Mat &incidence, const cv::Mat &normal, Material &material, double n);
+	
+	cv::Mat castRay(const cv::Mat &ray, const cv::Mat &origin, uint8_t level, double n);
+
 	Scene scene;
 private:
-
-	//cv::Mat castRay(const cv::Mat &ray, const cv::Mat &origin, uint8_t level);
-	
-	//cv::Mat calcRefractionVector(const cv::Mat &incidence, const cv::Mat &normal, Material &material);
 
 };
 

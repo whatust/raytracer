@@ -28,6 +28,7 @@ public:
 	Camera();
 	Camera(cv::Mat pos, cv::Mat lookAt, cv::Mat up);
 	Camera(cv::Mat pos, cv::Mat lookAt, cv::Mat up, uint32_t width, uint32_t height);
+	~Camera();
 
 	void print();
 
