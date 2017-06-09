@@ -197,10 +197,8 @@ cv::Mat RayTracer::calcReflectionVector(
 cv::Mat RayTracer::calcRefractionVector(
                                     const cv::Mat &incidence,
                                     const cv::Mat &normal,
-                                    Material &material,
-                                    double old_n){
-
-    double new_n = material.n;
+                                    double old_n,
+                                    double new_n){
 
     cv::Mat v_refraction = (cv::Mat_<double>(3,1) << 0,0,0);
 
@@ -218,16 +216,35 @@ cv::Mat RayTracer::calcRefractionVector(
     return v_refraction;
 }
 
-cv::Mat RayTracer::calcIntersectionCord(const cv::Mat &origin, const cv::Mat &ray, double dist){
+cv::Mat RayTracer::calcIntersectionCord(
+                                    const cv::Mat &origin,
+                                    const cv::Mat &ray,
+                                    double dist){
 
     return origin + dist * ray;
+}
+
+std::pair<double, double> RayTracer::materialTransf(
+                                                const std::shared_ptr<Object> old_object,
+                                                const std::shared_ptr<Object> new_object){
+    
+    std::pair<double, double> n;
+
+    if(old_object == new_object){
+        n.first = new_object->getMaterial()->n;
+        n.second = 1.0;
+    }else{
+        n.first = 1.0;
+        n.second = new_object->getMaterial()->n;
+    }
+    return n;
 }
 
 cv::Mat RayTracer::castRay(
                         const cv::Mat &ray,
                         const cv::Mat &origin,
                         uint8_t level,
-                        double n){
+                        const std::shared_ptr<Object> old_object){
 
     std::shared_ptr<Object> object;
     cv::Mat intersection;
@@ -282,18 +299,20 @@ cv::Mat RayTracer::castRay(
             if(material.reflectance > 0.0){
                 cv::Mat v_reflection = calcReflectionVector(-ray_inv, v_normal);
                 cv::Mat reflection_new_origin = TransfPoint(calcIntersectionCord(intersection, v_reflection, MIN_DELTA), M, 1.0);
-                reflection_comp = castRay(TransfPoint(v_reflection, M, 0.0), reflection_new_origin, level-1, n) * material.reflectance;
+                reflection_comp = castRay(TransfPoint(v_reflection, M, 0.0), reflection_new_origin, level-1, object) * material.reflectance;
             }
 
             //Refraction
             
             if(material.refractance > 0.0){
-                cv::Mat v_refraction = calcRefractionVector(ray_inv, v_normal, material, n);
+
+                std::pair<double, double> n = materialTransf(old_object, object);
+                cv::Mat v_refraction = calcRefractionVector(ray_inv, v_normal, n.first, n.second);
                 cv::Mat refraction_new_origin = TransfPoint(calcIntersectionCord(intersection, v_refraction, MIN_DELTA), M, 1.0);
-                refraction_comp = castRay(TransfPoint(v_refraction, M, 0.0), refraction_new_origin, level-1, material.n) * material.refractance;
+                refraction_comp = castRay(TransfPoint(v_refraction, M, 0.0), refraction_new_origin, level-1, object) * material.refractance;
             }
 
-            pixel_color = ambient_comp + specular_comp + diffuse_comp + reflection_comp;// + refraction_comp;
+            pixel_color = ambient_comp + specular_comp + diffuse_comp + reflection_comp + refraction_comp;
         }else{
             pixel_color = ambient_comp + specular_comp + diffuse_comp;
         }
@@ -345,7 +364,7 @@ void RayTracer::renderScene(){
         for(uint32_t c = 0; c < image_scene.cols; ++c){
 
             cv::Mat ray = calcCameraRay(width, height, c, r);
-            cv::Mat color = castRay(ray, scene.camera.pos, scene.getLevel(), 1.0);
+            cv::Mat color = castRay(ray, scene.camera.pos, scene.getLevel(), nullptr);
 
             const double *data = color.ptr<double>(0);
             Mr[c] = cv::Point3d((uint8_t)data[0], (uint8_t)data[1], (uint8_t)data[2]);
@@ -498,7 +517,7 @@ int main(){
     std::cout << "origin";
     util::printMat<double>(rayTracer.scene.camera.pos);
 
-    cv::Mat color = rayTracer.castRay(camera_ray, rayTracer.scene.camera.pos, 1, 1.0);
+    cv::Mat color = rayTracer.castRay(camera_ray, rayTracer.scene.camera.pos, 1, nullptr);
 
     std::cout << "color";
     util::printMat<double>(color);
